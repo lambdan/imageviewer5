@@ -1,14 +1,35 @@
 import Cocoa
 import SwiftUI
 
+// Settings
+// TODO make these configurable in the GUI in like the menubar or something
+var ShowIndexInTitlebar = true
+var ShowResolutionInTitlebar = true
+
+// Variables
+var WindowTitle = "imageviewer5" // Shown in the titlebar of the window when no image is loaded
+var window_spawned = false // Is the window created?
+
+var current_url = "" // file:// URL to the current image we are showing
+var current_image_width = 0 // width of current image in pixels
+var current_image_height = 0 // height -"-
+
+var current_folder = "" // file:// URL to the current folder we are showing images from
+var files_in_folder = [String]() // This array will hold images we can display
+
+var currentImageIndex = 0 // Which image in the array we are showing
+var totalFilesInFolder = 0 // How many images in the folder that we can show
+
+//
+// Main code...
+//
+
 let NCName = "ImageViewer_NC"
-let HandledFileExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "heif", "heic", "tif"]
 let mainmenu = NSApplication.shared.mainMenu!
 let subMenu = mainmenu.item(withTitle: "File")?.submenu
-
-var WindowTitle = "imageviewer5"
-
 var window: NSWindow!
+
+let HandledFileExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "heif", "heic", "tif"] // File extensions we can handle
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -83,14 +104,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 }
 
-// The url names are confusing because you'd think we working with online files
-// but its a file:// url
-
-var current_url = ""
-var current_folder = ""
-var files_in_folder = [String]()
-var window_spawned = false
-
 func spawn_window() {
     // Create the SwiftUI view that provides the window contents.
     let contentView = ContentView()
@@ -110,17 +123,40 @@ func spawn_window() {
     
 }
 
-func set_new_url(in_url: String) {
+func set_new_url(in_url: String) { // This is the main thing. It gets called whenever we change picture.
     // TODO check if image is valid etc
     
     if window_spawned == false {
         spawn_window()
     }
-    
-    current_url = in_url
-    window.title = get_filename()
     //window.makeKeyAndOrderFront(true)
+    
+    // Set all variables etc
+    current_url = in_url
     check_image_folder(file_url_string: in_url)
+    currentImageIndex = files_in_folder.firstIndex(of: current_url)!
+    totalFilesInFolder = files_in_folder.count
+    
+    // Get image resolution, https://stackoverflow.com/a/13228091
+    let img = NSImageRep(contentsOf: URL(string: current_url)!)
+    current_image_width = Int( img!.pixelsWide )
+    current_image_height = Int( img!.pixelsHigh )
+    
+    // Set up the window title
+    WindowTitle = ""
+    
+    if ShowIndexInTitlebar == true { // First the index at the start...
+        let TitlebarImageIndex = currentImageIndex + 1 // because 0/x looks weird
+        WindowTitle = WindowTitle + "[" + String(TitlebarImageIndex) + "/" + String(totalFilesInFolder) + "] "
+    }
+    
+    WindowTitle = WindowTitle + get_filename() // ...filename in the middle...
+    
+    if ShowResolutionInTitlebar == true { // And then the resolution at the end
+        WindowTitle = WindowTitle + " (" + String(current_image_width) + "x" + String(current_image_height) + ")"
+    }
+    
+    window.title = WindowTitle
     
     // Enable menu items since we now should have a image loaded
     subMenu?.item(withTitle: "Next")?.isEnabled = true
@@ -185,14 +221,15 @@ func check_image_folder(file_url_string: String) {
 }
 
 func NextPic(inc: Int) {
-    let curr = files_in_folder.firstIndex(of: current_url)
     //print("Current picture is", files_in_folder[curr!])
-    var next = curr! + inc
+    var next = currentImageIndex + inc
     
-    if next >= files_in_folder.count {
+    if next >= totalFilesInFolder {
+        // we've gone through all pictures in the folder... lets go to the first one!
         next = 0 // TODO show some fancy loop indication here
     } else if next < 0 {
-        next = files_in_folder.count - 1
+        // we've gone through all pictures in the folder, but backwards... lets go to the last one!
+        next = totalFilesInFolder - 1
     }
     //print("Next is", files_in_folder[next])
     let next_url = files_in_folder[next]
