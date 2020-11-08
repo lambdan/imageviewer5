@@ -3,14 +3,14 @@ import AppKit
 import Combine
 import Foundation
 
-var screen_width = NSScreen.main?.frame.width
-var screen_height = NSScreen.main?.frame.height
-
+var screen_width = NSScreen.main?.frame.width // Current display max width
+var screen_height = NSScreen.main?.frame.height // and height
 
 struct ContentView: View {
     @State var url_string = get_URL_String()
-    //@State var window_width = (screen_width)! / 2 // get macs screen resolution
-    //@State var window_height = (screen_height)! / 2
+    @State var imgW = CGFloat(get_IMG_Size(axis: "Width"))
+    @State var imgH = CGFloat(get_IMG_Size(axis: "Height"))
+    
     
     let pub = NotificationCenter.default.publisher(for: NSNotification.Name(NCName))
     
@@ -26,13 +26,17 @@ struct ContentView: View {
             }.onReceive(pub) {_ in
             // This gets run when notification is sent
             self.url_string = get_URL_String()
+            self.imgW = CGFloat(get_IMG_Size(axis: "Width"))
+            self.imgH = CGFloat(get_IMG_Size(axis: "Height"))
+            
         }
+        .frame(minWidth: 400, idealWidth: imgW, maxWidth: NSScreen.main?.frame.height, minHeight: 300, idealHeight: imgH, maxHeight: NSScreen.main?.frame.height)
     }
 }
-
+/*
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-}
+}*/
 

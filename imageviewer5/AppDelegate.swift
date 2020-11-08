@@ -110,9 +110,11 @@ func spawn_window() {
 
     // Create the window and set the content view.
     window = NSWindow(
-        contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
+        contentRect: NSRect(),
         styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
         backing: .buffered, defer: false)
+    
+    //contentView.frame(minWidth: CGFloat(current_image_width), minHeight:CGFloat(current_image_height))
     window.title = WindowTitle
     window.center()
     window.setFrameAutosaveName("Main Window")
@@ -168,6 +170,16 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
 
 func get_URL_String() -> String { /* file://path/to/picture.jpg */
     return current_url
+}
+
+func get_IMG_Size(axis: String) -> Int {
+    if axis == "Width" {
+        return current_image_width
+    }
+    if axis == "Height" {
+        return current_image_height
+    }
+    return 0
 }
 
 func get_full_filepath() -> String { /* /path/to/picture.jpg */
