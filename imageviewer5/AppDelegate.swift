@@ -27,6 +27,7 @@ var totalFilesInFolder = 0 // How many images in the folder that we can show
 let NCName = "ImageViewer_NC"
 let mainmenu = NSApplication.shared.mainMenu!
 let subMenu = mainmenu.item(withTitle: "File")?.submenu
+let defaultWindowTitle = "imageviewer5"
 var window: NSWindow!
 
 let HandledFileExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "heif", "heic", "tif"] // File extensions we can handle
@@ -88,6 +89,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let pb = NSPasteboard.general
         pb.clearContents()
         pb.writeObjects(NSArray(object: URL(string: get_URL_String())!) as! [NSPasteboardWriting]) // TODO understand this line better, i have no idea why it works
+    }
+    
+    @IBAction func deleteFile(_sender: NSMenuItem) {
+        let fileManager = FileManager()
+        do {
+            try fileManager.removeItem(atPath: get_full_filepath()) //TODO move to trash instead?
+            
+            if files_in_folder.count > 1 { // this wasnt the last image so just move to the next one
+                current_folder = "" // need to do this to refresh the folder check.. TODO maybe just remove the deleted file from the array instead?
+                NextPic(inc: 1)
+            } else { // no files left in folder
+                reset_everything()
+            }
+        }
+        catch {
+            print("Error deleting file")
+        }
     }
     
     
@@ -165,6 +183,7 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
     subMenu?.item(withTitle: "Previous")?.isEnabled = true
     subMenu?.item(withTitle: "Copy Image")?.isEnabled = true
     subMenu?.item(withTitle: "Copy Path to Image")?.isEnabled = true
+    subMenu?.item(withTitle: "Delete")?.isEnabled = true // TODO enable this only if file exists
  
 }
 
@@ -254,4 +273,26 @@ func send_NC(text: String) {
     NotificationCenter.default.post(name: NSNotification.Name(rawValue: NCName), object: nil)
 }
 
+func reset_everything() {
+    window.title = defaultWindowTitle
 
+    current_url = "" // file:// URL to the current image we are showing
+    current_image_width = 0 // width of current image in pixels
+    current_image_height = 0 // height -"-
+
+    current_folder = "" // file:// URL to the current folder we are showing images from
+    files_in_folder = [String]() // This array will hold images we can display
+
+    currentImageIndex = 0 // Which image in the array we are showing
+    totalFilesInFolder = 0 // How many images in the folder that we can show
+    
+    // Disable menu items again
+    subMenu?.item(withTitle: "Next")?.isEnabled = false
+    subMenu?.item(withTitle: "Previous")?.isEnabled = false
+    subMenu?.item(withTitle: "Copy Image")?.isEnabled = false
+    subMenu?.item(withTitle: "Copy Path to Image")?.isEnabled = false
+    subMenu?.item(withTitle: "Delete")?.isEnabled = false
+    
+    // Tell window to refresh
+    send_NC(text: "Reset")
+}
