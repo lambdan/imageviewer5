@@ -82,11 +82,21 @@
                                                 <action selector="copyFilePathWith_sender:" target="Voe-Tx-rLC" id="Tvr-PF-EP9"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Delete" enabled="NO" id="H1N-eK-ie9">
+                                        <menuItem isSeparatorItem="YES" id="sTN-Zd-hjK"/>
+                                        <menuItem title="Trash" enabled="NO" id="pMc-rl-NpW">
                                             <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="trashFileWith_sender:" target="Voe-Tx-rLC" id="MiS-wJ-mvF"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Delete" enabled="NO" id="H1N-eK-ie9">
+                                            <string key="keyEquivalent" base64-UTF8="YES">
+CA
+</string>
+                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                             <connections>
                                                 <action selector="deleteFileWith_sender:" target="Voe-Tx-rLC" id="Jaw-cM-qIQ"/>
                                             </connections>

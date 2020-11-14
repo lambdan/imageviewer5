@@ -94,7 +94,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func deleteFile(_sender: NSMenuItem) {
         let fileManager = FileManager()
         do {
-            try fileManager.removeItem(atPath: get_full_filepath()) //TODO move to trash instead?
+            try fileManager.removeItem(atPath: get_full_filepath())
             
             if files_in_folder.count > 1 { // this wasnt the last image so just move to the next one
                 current_folder = "" // need to do this to refresh the folder check.. TODO maybe just remove the deleted file from the array instead?
@@ -104,7 +104,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         catch {
+            //TODO probably need to do more here
             print("Error deleting file")
+        }
+    }
+    
+    @IBAction func trashFile(_sender: NSMenuItem) {
+        let fileManager = FileManager()
+        do {
+            try fileManager.trashItem(at: URL(string: get_URL_String())!, resultingItemURL: nil)
+            //TODO catch the resultingItemURL to add Undo functionality
+            
+            if files_in_folder.count > 1 { // this wasnt the last image so just move to the next one
+                current_folder = "" // need to do this to refresh the folder check.. TODO maybe just remove the deleted file from the array instead?
+                NextPic(inc: 1)
+            } else { // no files left in folder
+                reset_everything()
+            }
+        }
+        catch {
+            //TODO probably need to do more here
+            print("Error trashing file")
         }
     }
     
@@ -184,6 +204,7 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
     subMenu?.item(withTitle: "Copy Image")?.isEnabled = true
     subMenu?.item(withTitle: "Copy Path to Image")?.isEnabled = true
     subMenu?.item(withTitle: "Delete")?.isEnabled = true // TODO enable this only if file exists
+    subMenu?.item(withTitle: "Trash")?.isEnabled = true
  
 }
 
@@ -292,6 +313,7 @@ func reset_everything() {
     subMenu?.item(withTitle: "Copy Image")?.isEnabled = false
     subMenu?.item(withTitle: "Copy Path to Image")?.isEnabled = false
     subMenu?.item(withTitle: "Delete")?.isEnabled = false
+    subMenu?.item(withTitle: "Trash")?.isEnabled = false
     
     // Tell window to refresh
     send_NC(text: "Reset")
