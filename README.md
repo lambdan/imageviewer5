@@ -10,12 +10,12 @@ Thinking about it, it seemed like a pretty simple app to make and a great opport
 ## Features
 
 - Navigate images in a folder by hitting left/right arrow
-- Copy image by hitting ⌘C
-- Copy path to image by hitting ⌥⌘C
+- Copy image or image path
+- Trash and Delete files 
 - Open a image through the File > Open menu, Right clicking an image and using Open With or Drag an image onto the Dock icon
 - Filename, position in folder and resolution shown in title bar
 - ...and that's it! Nice and simple, and fast.
 
 The icon is a random mess I made quickly, it'll get replaced eventually... or maybe not:
 
-![Icon](https://github.com/lambdan/imageviewer5/blob/master/Icon/256x256.png)
+![Icon](https://raw.githubusercontent.com/lambdan/imageviewer5/master/Icon/256BS.png)
