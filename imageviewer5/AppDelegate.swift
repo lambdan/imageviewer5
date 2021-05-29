@@ -30,7 +30,7 @@ let subMenu = mainmenu.item(withTitle: "File")?.submenu
 let defaultWindowTitle = "imageviewer5"
 var window: NSWindow!
 
-let HandledFileExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "heif", "heic", "tif", "webp"] // File extensions we can handle
+let HandledFileExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "heif", "heic", "tif", "webp", "tiff"] // File extensions we can handle
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
