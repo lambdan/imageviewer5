@@ -25,11 +25,11 @@ struct ContentView: View, DropDelegate {
     }
     
     func dropEntered(info: DropInfo) {
+        // TODO show that frame around like other apps
         //self.bgcolor = Color(.systemOrange)
     }
     
     func dropExited(info: DropInfo) {
-        print("drop exited")
         //self.bgcolor = Color(.systemBlue)
     }
     
