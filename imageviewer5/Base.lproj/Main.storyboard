@@ -22,6 +22,12 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="m2L-73-66V"/>
+                                        <menuItem title="Preferences..." keyEquivalent="," id="Uf7-gH-miP">
+                                            <connections>
+                                                <action selector="openPrefsWith_sender:" target="Voe-Tx-rLC" id="oh5-mg-cRC"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="4IE-Ok-ZXG"/>
                                         <menuItem title="Hide imageviewer5" keyEquivalent="h" id="Olw-nP-bQN">
                                             <connections>
                                                 <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>

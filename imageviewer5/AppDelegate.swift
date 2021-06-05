@@ -1,11 +1,6 @@
 import Cocoa
 import SwiftUI
 
-// Settings
-// TODO make these configurable in the GUI in like the menubar or something
-var ShowIndexInTitlebar = true
-var ShowResolutionInTitlebar = true
-
 // Variables
 var WindowTitle = "imageviewer5" // Shown in the titlebar of the window when no image is loaded
 var window_spawned = false // Is the window created?
@@ -19,6 +14,9 @@ var files_in_folder = [String]() // This array will hold images we can display
 
 var currentImageIndex = 0 // Which image in the array we are showing
 var totalFilesInFolder = 0 // How many images in the folder that we can show
+
+
+let UD = UserDefaults.standard
 
 //
 // Main code...
@@ -74,6 +72,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func prevFile(_sender: NSMenuItem) {
         //print("Pressed prev")
         NextPic(inc: -1)
+    }
+    
+    @IBAction func openPrefs(_sender: NSMenuItem) {
+        OpenPrefsWindow()
     }
     
     @IBAction func copyFilePath(_sender: NSMenuItem) {
@@ -185,14 +187,16 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
     // Set up the window title
     WindowTitle = ""
     
-    if ShowIndexInTitlebar == true { // First the index at the start...
+    if UD.bool(forKey: "Show Index In Title") == true { // First the index at the start...
         let TitlebarImageIndex = currentImageIndex + 1 // because 0/x looks weird
         WindowTitle = WindowTitle + "[" + String(TitlebarImageIndex) + "/" + String(totalFilesInFolder) + "] "
     }
     
-    WindowTitle = WindowTitle + get_filename() // ...filename in the middle...
+    if UD.bool(forKey: "Show Name In Title") == true {
+        WindowTitle = WindowTitle + get_filename() // ...filename in the middle...
+    }
     
-    if ShowResolutionInTitlebar == true { // And then the resolution at the end
+    if UD.bool(forKey: "Show Resolution In Title") == true { // And then the resolution at the end
         WindowTitle = WindowTitle + " (" + String(current_image_width) + "x" + String(current_image_height) + ")"
     }
     
@@ -317,4 +321,40 @@ func reset_everything() {
     
     // Tell window to refresh
     send_NC(text: "Reset")
+}
+
+func OpenPrefsWindow() {
+        var windowRef: NSWindow
+        windowRef = NSWindow(
+                contentRect: NSRect(x: 100, y: 100, width: 100, height: 100),
+                styleMask: [.titled, .closable],
+                backing: .buffered, defer: false)
+        windowRef.title = "Preferences"
+        windowRef.center()
+        windowRef.contentView = NSHostingView(rootView: PrefsView())
+        windowRef.makeKeyAndOrderFront(windowRef)
+        NSApp.activate(ignoringOtherApps: true)
+        windowRef.isReleasedWhenClosed = false
+}
+
+func isKeyPresentInUserDefaults(key: String) -> Bool { // https://smartcodezone.com/check-if-key-is-exists-in-userdefaults-in-swift/
+       return UD.object(forKey: key) != nil
+}
+
+func loadUserDefaults() {
+    if isKeyPresentInUserDefaults(key: "Show Index In Title") == false {
+        UD.set(true, forKey: "Show Index In Title")
+    }
+    
+    if isKeyPresentInUserDefaults(key: "Show Name In Title") == false {
+        UD.set(true, forKey: "Show Name In Title")
+    }
+    
+    if isKeyPresentInUserDefaults(key: "Show Resolution In Title") == false {
+        UD.set(true, forKey: "Show Resolution In Title")
+    }
+}
+
+func SettingsUpdated() {
+    set_new_url(in_url: current_url)
 }
