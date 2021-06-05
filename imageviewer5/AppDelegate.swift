@@ -2,7 +2,7 @@ import Cocoa
 import SwiftUI
 
 // Variables
-var WindowTitle = "imageviewer5" // Shown in the titlebar of the window when no image is loaded
+var DefaultWindowTitle = "imageviewer5" // Shown in the titlebar of the window when no image is loaded
 var window_spawned = false // Is the window created?
 
 var current_url = "" // file:// URL to the current image we are showing
@@ -132,6 +132,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        loadUserDefaults()
+        
+        if UD.string(forKey: "Last Session Image") != "NULL" {
+            // Make sure file exists
+            let filePath = URL(string: UD.string(forKey: "Last Session Image")!)!.path
+            let fileManager = FileManager.default
+            
+            if fileManager.fileExists(atPath: filePath) { // It exists
+                set_new_url(in_url: UD.string(forKey: "Last Session Image")!)
+                send_NC(text: "Loaded last session")
+            } else {
+                print("Image from last session was not found!")
+            }
+        }
+        
         if current_url == "" { // No image loaded, spawn a blank window with the "No image loaded" text
             spawn_window()
         }
@@ -155,7 +170,7 @@ func spawn_window() {
         backing: .buffered, defer: false)
     
     //contentView.frame(minWidth: CGFloat(current_image_width), minHeight:CGFloat(current_image_height))
-    window.title = WindowTitle
+    window.title = DefaultWindowTitle
     window.center()
     window.setFrameAutosaveName("Main Window")
     window.contentView = NSHostingView(rootView: contentView)
@@ -185,7 +200,7 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
     current_image_height = Int( img!.pixelsHigh )
     
     // Set up the window title
-    WindowTitle = ""
+    var WindowTitle = ""
     
     if UD.bool(forKey: "Show Index In Title") == true { // First the index at the start...
         let TitlebarImageIndex = currentImageIndex + 1 // because 0/x looks weird
@@ -200,6 +215,10 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
         WindowTitle = WindowTitle + " (" + String(current_image_width) + "x" + String(current_image_height) + ")"
     }
     
+    if WindowTitle == "" {
+        WindowTitle = DefaultWindowTitle
+    }
+    
     window.title = WindowTitle
     
     // Enable menu items since we now should have a image loaded
@@ -209,6 +228,13 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
     subMenu?.item(withTitle: "Copy Path to Image")?.isEnabled = true
     subMenu?.item(withTitle: "Delete")?.isEnabled = true // TODO enable this only if file exists
     subMenu?.item(withTitle: "Trash")?.isEnabled = true
+    
+    // Update last session image
+    if UD.bool(forKey: "Remember Last Session Image") == true {
+        UD.setValue(current_url, forKey: "Last Session Image")
+    } else {
+        UD.setValue("NULL", forKey: "Last Session Image")
+    }
  
 }
 
@@ -353,8 +379,19 @@ func loadUserDefaults() {
     if isKeyPresentInUserDefaults(key: "Show Resolution In Title") == false {
         UD.set(true, forKey: "Show Resolution In Title")
     }
+
+    // Last session vars
+    if isKeyPresentInUserDefaults(key: "Remember Last Session Image") == false {
+        UD.set(true, forKey: "Remember Last Session Image")
+    }
+    if isKeyPresentInUserDefaults(key: "Last Session Image") == false {
+        UD.set("NULL", forKey: "Last Session Image")
+    }
 }
 
 func SettingsUpdated() {
-    set_new_url(in_url: current_url)
+    print("Settings updated")
+    if current_url != "" {
+        set_new_url(in_url: current_url)
+    }
 }

@@ -45,8 +45,6 @@ struct ContentView: View, DropDelegate {
         VStack {
             if url_string == "" {
                 Text("No image loaded").fixedSize().padding(50)
-                    
-                
             } else {
                 Image(nsImage: NSImage(contentsOf: URL(string:url_string)!)!).resizable().aspectRatio(contentMode: .fit)
             }
@@ -72,26 +70,46 @@ struct PrefsView: View {
     @State private var ShowIndexInTitle = UD.bool(forKey: "Show Index In Title")
     @State private var ShowNameInTitle = UD.bool(forKey: "Show Name In Title")
     @State private var ShowResolutionInTitle = UD.bool(forKey: "Show Resolution In Title")
+    @State private var RememberLastSession = UD.bool(forKey: "Remember Last Session Image")
     
     let pub = NotificationCenter.default.publisher(for: NSNotification.Name(NCName))
     
     var body: some View {
         VStack {
-            Toggle("Show Index In Title", isOn: $ShowIndexInTitle).onChange(of: ShowIndexInTitle) { newvalue in
-                UD.setValue(newvalue, forKey: "Show Index In Title")
-                SettingsUpdated()
+            Form {
+                
+                Section() {
+                    Toggle("Remember Image from Last Session", isOn: $RememberLastSession).onChange(of: RememberLastSession) { newvalue in
+                        UD.setValue(newvalue, forKey: "Remember Last Session Image")
+                        SettingsUpdated()
+                    }
+                    
+                }
+                
+                
+                Divider()
+                
+                Section(header:Text("Window Title Preferences:")) {
+                    
+                    Toggle("Show Index", isOn: $ShowIndexInTitle).onChange(of: ShowIndexInTitle) { newvalue in
+                        UD.setValue(newvalue, forKey: "Show Index In Title")
+                        SettingsUpdated()
+                    }
+                    Toggle("Show Name", isOn: $ShowNameInTitle).onChange(of: ShowNameInTitle) { newvalue in
+                        UD.setValue(newvalue, forKey: "Show Name In Title")
+                        SettingsUpdated()
+                    }
+                    Toggle("Show Resolution", isOn: $ShowResolutionInTitle).onChange(of: ShowResolutionInTitle) { newvalue in
+                        UD.setValue(newvalue, forKey: "Show Resolution In Title")
+                        SettingsUpdated()
+                    }
+                }
+                
             }
-            Toggle("Show Name In Title", isOn: $ShowNameInTitle).onChange(of: ShowNameInTitle) { newvalue in
-                UD.setValue(newvalue, forKey: "Show Name In Title")
-                SettingsUpdated()
-            }
-            Toggle("Show Resolution In Title", isOn: $ShowResolutionInTitle).onChange(of: ShowResolutionInTitle) { newvalue in
-                UD.setValue(newvalue, forKey: "Show Resolution In Title")
-                SettingsUpdated()
-            }
+            
         }
         .onReceive(pub) {_ in
-            print("Pub prefs received")
+            
         }
         .padding().frame(minWidth: 300, minHeight: 300)
     }
