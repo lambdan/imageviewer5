@@ -394,7 +394,7 @@ func isKeyPresentInUserDefaults(key: String) -> Bool { // https://smartcodezone.
 
 func loadUserDefaults() {
     if isKeyPresentInUserDefaults(key: "Show Index In Title") == false {
-        UD.set(true, forKey: "Show Index In Title")
+        UD.set(false, forKey: "Show Index In Title")
     }
     
     if isKeyPresentInUserDefaults(key: "Show Name In Title") == false {
@@ -402,7 +402,7 @@ func loadUserDefaults() {
     }
     
     if isKeyPresentInUserDefaults(key: "Show Resolution In Title") == false {
-        UD.set(true, forKey: "Show Resolution In Title")
+        UD.set(false, forKey: "Show Resolution In Title")
     }
     
     if isKeyPresentInUserDefaults(key: "Show Info Bar") == false {
