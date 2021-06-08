@@ -56,7 +56,7 @@ struct ContentView: View, DropDelegate {
             if self.showInfoBar == true && url_string != "" {
                 Spacer()
                 HStack {
-                    Text(self.InfoBar_Text_Name).bold()
+                    Text(self.InfoBar_Text_Name).bold().help(get_full_filepath())
                     Text(self.InfoBar_Text_Format)
                     Text(self.InfoBar_Text_Misc)
                 }.padding()
@@ -96,14 +96,14 @@ struct PrefsView: View {
             Form {
                 
                 Section() {
-                    Toggle("Remember Image from Last Session", isOn: $RememberLastSession).onChange(of: RememberLastSession) { newvalue in
+                    Toggle("Remember Last Picture", isOn: $RememberLastSession).onChange(of: RememberLastSession) { newvalue in
                         UD.setValue(newvalue, forKey: "Remember Last Session Image")
                         SettingsUpdated()
-                    }
+                    }.help("Automatically re-open the picture you last viewed the next time you open the app")
                     
-                    Toggle("Show Info Bar", isOn: $StatusBarEnabled).onChange(of: StatusBarEnabled) { newvalue in
+                    Toggle("Info Bar", isOn: $StatusBarEnabled).onChange(of: StatusBarEnabled) { newvalue in
                         ToggleInfoBar()
-                    }
+                    }.help("Show information about the picture below it")
                     
                     
                 }
@@ -116,15 +116,18 @@ struct PrefsView: View {
                     Toggle("Show Index", isOn: $ShowIndexInTitle).onChange(of: ShowIndexInTitle) { newvalue in
                         UD.setValue(newvalue, forKey: "Show Index In Title")
                         SettingsUpdated()
-                    }
+                    }.help("[1/23]")
+                    
                     Toggle("Show Name", isOn: $ShowNameInTitle).onChange(of: ShowNameInTitle) { newvalue in
                         UD.setValue(newvalue, forKey: "Show Name In Title")
                         SettingsUpdated()
-                    }
+                    }.help("File Name.jpg")
+                    
                     Toggle("Show Resolution", isOn: $ShowResolutionInTitle).onChange(of: ShowResolutionInTitle) { newvalue in
                         UD.setValue(newvalue, forKey: "Show Resolution In Title")
                         SettingsUpdated()
-                    }
+                    }.help("1920x1080")
+                    
                 }
                 
             }
