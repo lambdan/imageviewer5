@@ -39,6 +39,7 @@ struct ContentView: View, DropDelegate {
     @State var showInfoBar = UD.bool(forKey: "Show Info Bar")
     @State var InfoBar_Text_Name = InfoBar_Name
     @State var InfoBar_Text_Format = InfoBar_Format
+    @State var InfoBar_Text_FileSize = InfoBar_FileSize
     @State var InfoBar_Text_Misc = InfoBar_Misc
     //@State var bgcolor = Color(.systemBlue)
     
@@ -56,8 +57,9 @@ struct ContentView: View, DropDelegate {
             if self.showInfoBar == true && url_string != "" {
                 Spacer()
                 HStack {
-                    Text(self.InfoBar_Text_Name).bold().help(get_full_filepath())
+                    Text(self.InfoBar_Text_Name).bold().help(Text(get_full_filepath()))
                     Text(self.InfoBar_Text_Format)
+                    Text(self.InfoBar_Text_FileSize)
                     Text(self.InfoBar_Text_Misc)
                 }.padding()
             }
@@ -72,6 +74,7 @@ struct ContentView: View, DropDelegate {
                 self.showInfoBar = UD.bool(forKey: "Show Info Bar")
                 self.InfoBar_Text_Name = InfoBar_Name
                 self.InfoBar_Text_Format = InfoBar_Format
+                self.InfoBar_Text_FileSize = InfoBar_FileSize
                 self.InfoBar_Text_Misc = InfoBar_Misc
         }
         

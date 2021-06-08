@@ -18,6 +18,7 @@ var totalFilesInFolder = 0 // How many images in the folder that we can show
 // Infobar vars
 var InfoBar_Name = "(Filename goes here)"
 var InfoBar_Format = "(Resolution etc goes here)"
+var InfoBar_FileSize = "(Filesize goes here)"
 var InfoBar_Misc = "(Misc stuff goes here)"
 
 
@@ -243,7 +244,7 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
     InfoBar_Format = String(current_image_width) + "x" + String(current_image_height) // TODO show color depth etc too
     let TitlebarImageIndex = currentImageIndex + 1 // because 0/x looks weird
     InfoBar_Misc = String(TitlebarImageIndex) + "/" + String(totalFilesInFolder)
-    
+    InfoBar_FileSize = get_human_size(bytes: get_file_size(urlString: current_url))
     
     
     // Enable menu items since we now should have a image loaded
@@ -285,6 +286,28 @@ func get_full_filepath() -> String { /* /path/to/picture.jpg */
 func get_filename() -> String { /* picture.jpg */
     let fn = String( (NSURL(string: get_URL_String())?.lastPathComponent)! )
     return fn
+}
+
+func get_file_size(urlString: String) -> Int {
+    let local_url = URL(string: urlString)
+    do {
+        let resources = try local_url!.resourceValues(forKeys:[.fileSizeKey])
+        let fileSize = resources.fileSize!
+        return fileSize
+    } catch {
+        return 0
+    }
+}
+
+func get_human_size(bytes: Int) -> String {
+    // https://stackoverflow.com/a/42723243
+    // get_human_size(bytes: get_file_size(urlString: current_url))
+    let bcf = ByteCountFormatter()
+    //bcf.allowedUnits = [.useMB, .useKB] // optional: restricts the units to MB and KB only
+    bcf.countStyle = .file
+    bcf.isAdaptive = true
+    let string = bcf.string(fromByteCount: Int64(bytes))
+    return string
 }
 
 func get_folder() -> String { /* /path/to/ */
