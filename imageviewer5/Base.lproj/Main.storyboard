@@ -119,8 +119,7 @@ CA
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
                                     <items>
-                                        <menuItem title="Info Bar" id="zKQ-Qk-5r6">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Info Bar" keyEquivalent="i" id="zKQ-Qk-5r6">
                                             <connections>
                                                 <action selector="toggleInfoBarWith_sender:" target="Ady-hI-5gd" id="YEu-tY-KJp"/>
                                             </connections>
