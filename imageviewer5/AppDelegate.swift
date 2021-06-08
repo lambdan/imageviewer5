@@ -15,6 +15,11 @@ var files_in_folder = [String]() // This array will hold images we can display
 var currentImageIndex = 0 // Which image in the array we are showing
 var totalFilesInFolder = 0 // How many images in the folder that we can show
 
+// Infobar vars
+var InfoBar_Name = "(Filename goes here)"
+var InfoBar_Format = "(Resolution etc goes here)"
+var InfoBar_Misc = "(Misc stuff goes here)"
+
 
 let UD = UserDefaults.standard
 
@@ -25,6 +30,7 @@ let UD = UserDefaults.standard
 let NCName = "ImageViewer_NC"
 let mainmenu = NSApplication.shared.mainMenu!
 let subMenu = mainmenu.item(withTitle: "File")?.submenu
+let InfoBar_MenuItem = mainmenu.item(withTitle: "Window")?.submenu?.item(withTitle: "Info Bar")
 let defaultWindowTitle = "imageviewer5"
 var window: NSWindow!
 
@@ -130,6 +136,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    @IBAction func toggleInfoBar(_sender: NSMenuItem) {
+        ToggleInfoBar()
+    }
+    
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         loadUserDefaults()
@@ -150,6 +160,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if current_url == "" { // No image loaded, spawn a blank window with the "No image loaded" text
             spawn_window()
         }
+        
+        if UD.bool(forKey: "Show Info Bar") == true {
+            InfoBar_MenuItem?.state = .on
+        } else {
+            InfoBar_MenuItem?.state = .off
+        }
+        
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -175,7 +192,7 @@ func spawn_window() {
     window.setFrameAutosaveName("Main Window")
     window.contentView = NSHostingView(rootView: contentView)
     window.makeKeyAndOrderFront(true)
-    
+        
     window_spawned = true
     
 }
@@ -220,6 +237,14 @@ func set_new_url(in_url: String) { // This is the main thing. It gets called whe
     }
     
     window.title = WindowTitle
+    
+    // Generate text for the infobar
+    InfoBar_Name = get_filename()
+    InfoBar_Format = String(current_image_width) + "x" + String(current_image_height) // TODO show color depth etc too
+    let TitlebarImageIndex = currentImageIndex + 1 // because 0/x looks weird
+    InfoBar_Misc = String(TitlebarImageIndex) + "/" + String(totalFilesInFolder)
+    
+    
     
     // Enable menu items since we now should have a image loaded
     subMenu?.item(withTitle: "Next")?.isEnabled = true
@@ -379,6 +404,10 @@ func loadUserDefaults() {
     if isKeyPresentInUserDefaults(key: "Show Resolution In Title") == false {
         UD.set(true, forKey: "Show Resolution In Title")
     }
+    
+    if isKeyPresentInUserDefaults(key: "Show Info Bar") == false {
+        UD.set(false, forKey: "Show Info Bar")
+    }
 
     // Last session vars
     if isKeyPresentInUserDefaults(key: "Remember Last Session Image") == false {
@@ -394,4 +423,20 @@ func SettingsUpdated() {
     if current_url != "" {
         set_new_url(in_url: current_url)
     }
+}
+
+func ToggleInfoBar() {
+    var local_InfoBarState = UD.bool(forKey: "Show Info Bar")
+    
+    if local_InfoBarState == false {
+        // Enabled infobar
+        local_InfoBarState = true
+        InfoBar_MenuItem?.state = .on
+    } else {
+        local_InfoBarState = false
+        InfoBar_MenuItem?.state = .off
+    }
+    
+    UD.set(local_InfoBarState, forKey: "Show Info Bar")
+    send_NC(text: "info bar toggled")
 }

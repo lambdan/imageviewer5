@@ -36,6 +36,10 @@ struct ContentView: View, DropDelegate {
     @State var url_string = get_URL_String()
     @State var imgW = CGFloat(get_IMG_Size(axis: "Width"))
     @State var imgH = CGFloat(get_IMG_Size(axis: "Height"))
+    @State var showInfoBar = UD.bool(forKey: "Show Info Bar")
+    @State var InfoBar_Text_Name = InfoBar_Name
+    @State var InfoBar_Text_Format = InfoBar_Format
+    @State var InfoBar_Text_Misc = InfoBar_Misc
     //@State var bgcolor = Color(.systemBlue)
     
     
@@ -48,6 +52,15 @@ struct ContentView: View, DropDelegate {
             } else {
                 Image(nsImage: NSImage(contentsOf: URL(string:url_string)!)!).resizable().aspectRatio(contentMode: .fit)
             }
+        
+            if self.showInfoBar == true && url_string != "" {
+                Spacer()
+                HStack {
+                    Text(self.InfoBar_Text_Name).bold()
+                    Text(self.InfoBar_Text_Format)
+                    Text(self.InfoBar_Text_Misc)
+                }.padding()
+            }
             
             
             }
@@ -56,7 +69,10 @@ struct ContentView: View, DropDelegate {
                 self.url_string = get_URL_String()
                 self.imgW = CGFloat(get_IMG_Size(axis: "Width"))
                 self.imgH = CGFloat(get_IMG_Size(axis: "Height"))
-            
+                self.showInfoBar = UD.bool(forKey: "Show Info Bar")
+                self.InfoBar_Text_Name = InfoBar_Name
+                self.InfoBar_Text_Format = InfoBar_Format
+                self.InfoBar_Text_Misc = InfoBar_Misc
         }
         
         
@@ -71,6 +87,7 @@ struct PrefsView: View {
     @State private var ShowNameInTitle = UD.bool(forKey: "Show Name In Title")
     @State private var ShowResolutionInTitle = UD.bool(forKey: "Show Resolution In Title")
     @State private var RememberLastSession = UD.bool(forKey: "Remember Last Session Image")
+    @State private var StatusBarEnabled = UD.bool(forKey: "Show Info Bar")
     
     let pub = NotificationCenter.default.publisher(for: NSNotification.Name(NCName))
     
@@ -83,6 +100,11 @@ struct PrefsView: View {
                         UD.setValue(newvalue, forKey: "Remember Last Session Image")
                         SettingsUpdated()
                     }
+                    
+                    Toggle("Show Info Bar", isOn: $StatusBarEnabled).onChange(of: StatusBarEnabled) { newvalue in
+                        ToggleInfoBar()
+                    }
+                    
                     
                 }
                 
