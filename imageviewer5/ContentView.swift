@@ -79,7 +79,7 @@ struct ContentView: View, DropDelegate {
         }
         
         
-        .frame(minWidth: 400, idealWidth: imgW, maxWidth: NSScreen.main?.frame.height, minHeight: 300, idealHeight: imgH, maxHeight: NSScreen.main?.frame.height)
+        .frame(minWidth: 400, idealWidth: imgW, maxWidth: NSScreen.main?.frame.width, minHeight: 300, idealHeight: imgH, maxHeight: NSScreen.main?.frame.height)
         //.background(Rectangle().fill(bgcolor))
         .onDrop(of: [(kUTTypeFileURL as String)], delegate: self)
     }
